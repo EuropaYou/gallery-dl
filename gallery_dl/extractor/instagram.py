@@ -231,10 +231,17 @@ class InstagramExtractor(Extractor):
                 continue
 
             if video_versions := item.get("video_versions"):
-                video = max(
-                    video_versions,
-                    key=lambda x: (x["width"], x["height"], x["type"]),
-                )
+                quality = self.config("get-lowest-quality", False)
+                if quality is False:
+                    video = max(
+                        video_versions,
+                        key=lambda x: (x["width"], x["height"], x["type"]),
+                    )
+                else:
+                    video = min(
+                        video_versions,
+                        key=lambda x: (x["width"], x["height"], x["type"]),
+                    )
                 media = video
             else:
                 video = None
