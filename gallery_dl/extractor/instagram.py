@@ -14,6 +14,7 @@ from .. import text, util, exception
 from ..cache import cache, memcache
 import itertools
 import binascii
+import json
 
 BASE_PATTERN = r"(?:https?://)?(?:www\.)?instagram\.com"
 USER_PATTERN = BASE_PATTERN + r"/(?!(?:p|tv|reel|explore|stories)/)([^/?#]+)"
@@ -69,46 +70,48 @@ class InstagramExtractor(Extractor):
             posts = itertools.islice(posts, max_posts)
 
         for post in posts:
+            try:
+                if "__typename" in post:
+                    post = self._parse_post_graphql(post)
+                else:
+                    post = self._parse_post_rest(post)
+                if self._user:
+                    post["user"] = self._user
+                post.update(data)
+                files = post.pop("_files")
 
-            if "__typename" in post:
-                post = self._parse_post_graphql(post)
-            else:
-                post = self._parse_post_rest(post)
-            if self._user:
-                post["user"] = self._user
-            post.update(data)
-            files = post.pop("_files")
+                post["count"] = len(files)
+                yield Message.Directory, post
 
-            post["count"] = len(files)
-            yield Message.Directory, post
+                if "date" in post:
+                    del post["date"]
+                if reverse:
+                    files.reverse()
 
-            if "date" in post:
-                del post["date"]
-            if reverse:
-                files.reverse()
+                for file in files:
+                    file.update(post)
 
-            for file in files:
-                file.update(post)
+                    if url := file.get("video_url"):
+                        if videos:
+                            file["_http_headers"] = videos_headers
+                            text.nameext_from_url(url, file)
+                            if videos_dash:
+                                file["_fallback"] = (url,)
+                                file["_ytdl_manifest"] = "dash"
+                                url = f"ytdl:{post['post_url']}{file['num']}.mp4"
+                            yield Message.Url, url, file
+                        if previews:
+                            file["media_id"] += "p"
+                        else:
+                            continue
 
-                if url := file.get("video_url"):
-                    if videos:
-                        file["_http_headers"] = videos_headers
-                        text.nameext_from_url(url, file)
-                        if videos_dash:
-                            file["_fallback"] = (url,)
-                            file["_ytdl_manifest"] = "dash"
-                            url = f"ytdl:{post['post_url']}{file['num']}.mp4"
-                        yield Message.Url, url, file
-                    if previews:
-                        file["media_id"] += "p"
-                    else:
-                        continue
-
-                url = file["display_url"]
-                text.nameext_from_url(url, file)
-                if file["extension"] == "webp" and "stp=dst-jpg" in url:
-                    file["extension"] = "jpg"
-                yield Message.Url, url, file
+                    url = file["display_url"]
+                    text.nameext_from_url(url, file)
+                    if file["extension"] == "webp" and "stp=dst-jpg" in url:
+                        file["extension"] = "jpg"
+                    yield Message.Url, url, file
+            except Exception as e:
+                print(e)
 
     def metadata(self):
         return ()
@@ -823,7 +826,10 @@ class InstagramRestAPI():
     def user_id(self, screen_name, check_private=True):
         if screen_name.startswith("id:"):
             if self.extractor.config("metadata"):
-                self.extractor._user = self.user_by_id(screen_name[3:])
+                try:
+                    self.extractor._user = self.user_by_id(screen_name[3:])
+                except Exception as e:
+                    self.extractor.log.warning("%s couldnt get metadata", screen_name)
             return screen_name[3:]
 
         user = self.user_by_name(screen_name)
@@ -904,7 +910,11 @@ class InstagramRestAPI():
         params["max_id"] = extr._init_cursor()
 
         while True:
-            data = self._call(endpoint, params=params)
+            try:
+                data = self._call(endpoint, params=params)
+            except json.JSONDecodeError:
+                self.extractor.log.warning("Instagram API returned empty response")
+                raise ValueError("Instagram API returned empty response") from None
 
             if media:
                 for item in data["items"]:
