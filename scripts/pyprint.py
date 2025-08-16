@@ -21,15 +21,14 @@ def pyprint(obj, indent=0, sort=None, oneline=True, lmin=0, lmax=16):
         else:
             prefix = ""
 
+        quote_beg = quote_end = '"'
         if "\n" in obj:
-            quote = '"""'
+            quote_beg = '"""\\\n'
+            quote_end = '\\\n"""'
         elif '"' in obj:
             obj = re.sub(r'(?<!\\)"', '\\"', obj)
-            quote = '"'
-        else:
-            quote = '"'
 
-        return f'''{prefix}{quote}{obj}{quote}'''
+        return f'''{prefix}{quote_beg}{obj}{quote_end}'''
 
     if isinstance(obj, bytes):
         return f'''b"{str(obj)[2:-1]}"'''
@@ -61,10 +60,13 @@ def pyprint(obj, indent=0, sort=None, oneline=True, lmin=0, lmax=16):
                 keys.sort()
                 obj = {key: obj[key] for key in keys}
 
-        ws = " " * indent
-        keylen = max(kl for kl in map(len, obj) if kl <= lmax)
+        try:
+            keylen = max(kl for kl in map(len, obj) if kl <= lmax)
+        except Exception:
+            keylen = lmin
         if keylen < lmin:
             keylen = lmin
+        ws = " " * indent
 
         lines = ["{"]
         for key, value in obj.items():
@@ -97,7 +99,17 @@ def pyprint(obj, indent=0, sort=None, oneline=True, lmin=0, lmax=16):
             return "()"
         if len(obj) == 1:
             return f'''({pyprint(obj[0], indent, sort)},)'''
-        return f'''({", ".join(pyprint(v, indent+4, sort) for v in obj)})'''
+
+        result = f'''({", ".join(pyprint(v, indent+4, sort) for v in obj)})'''
+        if len(result) < 80:
+            return result
+
+        ws = " " * indent
+        lines = ["("]
+        for value in obj:
+            lines.append(f'''{ws}    {pyprint(value, indent+4, sort)},''')
+        lines.append(f'''{ws})''')
+        return "\n".join(lines)
 
     if isinstance(obj, set):
         if not obj:

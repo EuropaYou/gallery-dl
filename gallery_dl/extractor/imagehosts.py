@@ -372,17 +372,24 @@ class ImgclickImageExtractor(ImagehostImageExtractor):
 class FappicImageExtractor(ImagehostImageExtractor):
     """Extractor for single images from fappic.com"""
     category = "fappic"
-    pattern = r"(?:https?://)?((?:www\.)?fappic\.com/(\w+)/[^/?#]+)"
-    example = "https://fappic.com/abc123/NAME.EXT"
+    pattern = (r"(?:https?://)?(?:www\.|img\d+\.)?fappic\.com"
+               r"/(?:i/\d+/())?(\w{10,})(?:/|\.)\w+")
+    example = "https://fappic.com/abcde12345/NAME.EXT"
+
+    def __init__(self, match):
+        Extractor.__init__(self, match)
+
+        thumb, token = self.groups
+        if thumb is not None and token.endswith("_t"):
+            self.token = token = token[:-2]
+        else:
+            self.token = token
+        self.page_url = f"https://fappic.com/{token}/pic.jpg"
 
     def get_info(self, page):
         url     , pos = text.extract(page, '<a href="#"><img src="', '"')
         filename, pos = text.extract(page, 'alt="', '"', pos)
-
-        if filename.startswith("Porn-Picture-"):
-            filename = filename[13:]
-
-        return url, filename
+        return url, text.re(r"^Porn[ -]Pic(?:s|ture)[ -]").sub("", filename)
 
 
 class PicstateImageExtractor(ImagehostImageExtractor):
@@ -401,12 +408,42 @@ class PicstateImageExtractor(ImagehostImageExtractor):
 class ImgdriveImageExtractor(ImagehostImageExtractor):
     """Extractor for single images from imgdrive.net"""
     category = "imgdrive"
-    pattern = r"(?:https?://)?((?:www\.)?imgdrive\.net/img-(\w+)\.html)"
+    pattern = (r"(?:https?://)?(?:www\.)?(img(drive|taxi|wallet)\.(?:com|net)"
+               r"/img-(\w+)\.html)")
     example = "https://imgdrive.net/img-0123456789abc.html"
+
+    def __init__(self, match):
+        path, category, self.token = match.groups()
+        self.page_url = f"https://{path}"
+        self.category = f"img{category}"
+        Extractor.__init__(self, match)
 
     def get_info(self, page):
         title, pos = text.extract(
             page, 'property="og:title" content="', '"')
-        url  , pos = text.extract(
+        image, pos = text.extract(
             page, 'property="og:image" content="', '"', pos)
-        return url.replace("/small/", "/big/"), title.rsplit(" | ", 2)[0]
+        return image.replace("/small/", "/big/"), title.rsplit(" | ", 2)[0]
+
+
+class SilverpicImageExtractor(ImagehostImageExtractor):
+    """Extractor for single images from silverpic.com"""
+    category = "silverpic"
+    pattern = (r"(?:https?://)?((?:www\.)?silverpic\.com"
+               r"/([a-z0-9]{10,})/[\S]+\.html)")
+    example = "https://silverpic.com/a1b2c3d4f5g6/NAME.EXT.html"
+
+    def get_info(self, page):
+        url, pos = text.extract(page, '<img src="/img/', '"')
+        alt, pos = text.extract(page, 'alt="', '"', pos)
+        return f"https://silverpic.com/img/{url}", alt
+
+    def metadata(self, page):
+        pos = page.find('<img src="/img/')
+        width = text.extract(page, 'width="', '"', pos)[0]
+        height = text.extract(page, 'height="', '"', pos)[0]
+
+        return {
+            "width" : text.parse_int(width),
+            "height": text.parse_int(height),
+        }
