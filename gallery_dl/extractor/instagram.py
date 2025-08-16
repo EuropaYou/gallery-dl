@@ -223,6 +223,7 @@ class InstagramExtractor(Extractor):
         data["post_date"] = data["date"] = text.parse_timestamp(
             post.get("taken_at") or post.get("created_at") or post.get("seen"))
         data["_files"] = files = []
+        shown_candidate_list_warning = False
         for num, item in enumerate(items, 1):
 
             try:
@@ -251,10 +252,12 @@ class InstagramExtractor(Extractor):
                 media = image
 
                 if len(candidates) <= 3 and not post.get("__gdl_gen"):
-                    self.log.warning(
-                        "%s: Image candidate list possibly incomplete "
-                        "(%s items). Consider refreshing your cookies.",
-                        data["post_shortcode"], len(candidates))
+                    if not shown_candidate_list_warning:
+                        self.log.warning(
+                            "%s: Image candidate list possibly incomplete "
+                            "(%s items). Consider refreshing your cookies.",
+                            data["post_shortcode"], len(candidates))
+                        shown_candidate_list_warning = True
                 elif image["width"] < item.get("original_width", 0) or \
                         image["height"] < item.get("original_height", 0):
                     self.log.warning(
