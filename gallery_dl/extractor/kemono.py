@@ -151,7 +151,8 @@ class KemonoExtractor(Extractor):
                     file["extension"] = ext
                 elif ext == "txt" and file["extension"] != "txt":
                     file["_http_validate"] = _validate
-                elif ext in exts_archive:
+                elif ext in exts_archive or \
+                        ext == "bin" and file["extension"] in exts_archive:
                     file["type"] = "archive"
                     if archives:
                         try:
@@ -562,6 +563,7 @@ class KemonoAPI():
     def __init__(self, extractor):
         self.extractor = extractor
         self.root = extractor.root + "/api/v1"
+        self.headers = {"Accept": "text/css"}
 
     def posts(self, offset=0, query=None, tags=None):
         endpoint = "/posts"
@@ -574,8 +576,7 @@ class KemonoAPI():
 
     def creators(self):
         endpoint = "/creators"
-        headers = {"Accept": "text/css"}
-        return self._call(endpoint, headers=headers)
+        return self._call(endpoint)
 
     def creator_posts(self, service, creator_id,
                       offset=0, query=None, tags=None):
@@ -644,6 +645,11 @@ class KemonoAPI():
         return self._call(endpoint, params)
 
     def _call(self, endpoint, params=None, headers=None, fatal=True):
+        if headers is None:
+            headers = self.headers
+        else:
+            headers = {**self.headers, **headers}
+
         return self.extractor.request_json(
             f"{self.root}{endpoint}", params=params, headers=headers,
             encoding="utf-8", fatal=fatal)

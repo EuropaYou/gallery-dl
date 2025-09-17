@@ -44,6 +44,11 @@ class TestFormatter(unittest.TestCase):
         "s": " \n\r\tSPACE    ",
         "S": " \n\r\tS  P         A\tC\nE    ",
         "h": "<p>foo </p> &amp; bar <p> </p>",
+        "H": """<p>
+  <a href="http://www.example.com">Lorem ipsum dolor sit amet</a>.
+  Duis aute irure <a href="http://blog.example.org/lorem?foo=bar">
+  http://blog.example.org</a>.
+</p>""",
         "u": "&#x27;&lt; / &gt;&#x27;",
         "t": 1262304000,
         "ds": "2010-01-01T01:00:00+01:00",
@@ -72,6 +77,10 @@ class TestFormatter(unittest.TestCase):
         self._run_test("{h!H}", "foo & bar")
         self._run_test("{u!H}", "'< / >'")
         self._run_test("{n!H}", "")
+        self._run_test("{h!R}", [])
+        self._run_test("{H!R}", ["http://www.example.com",
+                                 "http://blog.example.org/lorem?foo=bar",
+                                 "http://blog.example.org"])
         self._run_test("{a!s}", self.kwdict["a"])
         self._run_test("{a!r}", f"'{self.kwdict['a']}'")
         self._run_test("{a!a}", f"'{self.kwdict['a']}'")
@@ -168,6 +177,11 @@ class TestFormatter(unittest.TestCase):
     def test_indexing(self):
         self._run_test("{l[0]}" , "a")
         self._run_test("{a[6]}" , "w")
+
+    def test_indexing_negative(self):
+        self._run_test("{l[-1]}" , "c")
+        self._run_test("{a[-7]}" , "o")
+        self._run_test("{a[-0]}" , "h")  # same as a[0]
 
     def test_dict_access(self):
         self._run_test("{d[a]}"  , "foo")
@@ -590,10 +604,11 @@ def gentext(kwdict):
 def lengths(kwdict):
     a = 0
     for k, v in kwdict.items():
-        try:
-            a += len(v)
-        except TypeError:
-            pass
+        if k == k.lower():
+            try:
+                a += len(v)
+            except TypeError:
+                pass
     return format(a)
 
 def noarg():
@@ -616,10 +631,10 @@ def noarg():
             fmt4 = formatter.parse(f"\fM {path}:lengths")
 
         self.assertEqual(fmt1.format_map(self.kwdict), "'Title' by Name")
-        self.assertEqual(fmt2.format_map(self.kwdict), "168")
+        self.assertEqual(fmt2.format_map(self.kwdict), "139")
 
         self.assertEqual(fmt3.format_map(self.kwdict), "'Title' by Name")
-        self.assertEqual(fmt4.format_map(self.kwdict), "168")
+        self.assertEqual(fmt4.format_map(self.kwdict), "139")
 
         with self.assertRaises(TypeError):
             self.assertEqual(fmt0.format_map(self.kwdict), "")
