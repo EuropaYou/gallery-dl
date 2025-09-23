@@ -427,6 +427,7 @@ Default
         ``[Danbooru]``,
         ``[E621]``,
         ``[foolfuuka]:search``,
+        ``hdoujin``,
         ``itaku``,
         ``newgrounds``,
         ``[philomena]``,
@@ -438,6 +439,7 @@ Default
         ``scrolller``,
         ``sizebooru``,
         ``soundgasm``,
+        ``thehentaiworld``,
         ``urlgalleries``,
         ``vk``,
         ``webtoons``,
@@ -1596,6 +1598,32 @@ Description
 
     Supported module types are
     ``image``, ``video``, ``mediacollection``, ``embed``, ``text``.
+
+
+extractor.bellazon.order-posts
+------------------------------
+Type
+    ``string``
+Default
+    ``"desc"``
+Description
+    Controls the order in which
+    posts of a ``thread`` are processed.
+
+    ``"asc"``
+        Ascending order (oldest first)
+    ``"desc"`` | ``"reverse"``
+        Descending order (newest first)
+
+
+extractor.bellazon.quoted
+-------------------------
+Type
+    ``bool``
+Default
+    ``false``
+Description
+    Extract files from quoted content.
 
 
 extractor.[blogger].api-key
@@ -3092,6 +3120,70 @@ Description
     Recursively download files from subfolders.
 
 
+extractor.hdoujin.crt
+---------------------
+Type
+    ``string``
+Example
+    * ``"0542daa9-352c-4fd5-a497-6c6d5cf07423"``
+    * ``"/12345/a1b2c3d4e5f6?crt=0542daa9-352c-4fd5-a497-6c6d5cf07423"``
+Description
+    The ``crt`` query parameter value
+    sent when fetching gallery data.
+
+    To get this value:
+
+    * Open your browser's Developer Tools (F12)
+    * Select `Network` -> `XHR`
+    * Open a gallery page
+    * Select the last `Network` entry and copy its ``crt`` value
+
+    Note: You will also need your browser's
+    `user-agent <extractor.*.user-agent_>`__
+
+
+extractor.hdoujin.format
+------------------------
+Type
+    * ``string``
+    * ``list`` of ``strings``
+Default
+    ``["0", "1600", "1280", "980", "780"]``
+Description
+    Name(s) of the image format to download.
+
+    When more than one format is given, the first available one is selected.
+
+    | Possible formats are
+    | ``"780"``, ``"980"``, ``"1280"``, ``"1600"``, ``"0"`` (original)
+
+
+extractor.hdoujin.tags
+----------------------
+Type
+    ``bool``
+Default
+    ``false``
+Description
+    Group ``tags`` by type and
+    provide them as ``tags_<type>`` metadata fields,
+    for example ``tags_artist`` or ``tags_character``.
+
+
+extractor.hdoujin.token
+-----------------------
+Type
+    ``string``
+Example
+    * ``"3f1a9b72-4e4d-4f4e-9e5d-4a2b99f7c893"``
+    * ``"Bearer 3f1a9b72-4e4d-4f4e-9e5d-4a2b99f7c893"``
+    * ``"Authorization: Bearer 3f1a9b72-4e4d-4f4e-9e5d-4a2b99f7c893"``
+Description
+    ``Authorization`` header value
+    used for requests to ``https://api.hdoujin.org``
+    to access ``favorite`` galleries.
+
+
 extractor.hentaifoundry.descriptions
 ------------------------------------
 Type
@@ -3555,9 +3647,27 @@ Description
     `revisions <extractor.kemono.revisions_>`__
     are returned.
 
-    * ``"asc"``: Ascending order (oldest first)
-    * ``"desc"``: Descending order (newest first)
-    * ``"reverse"``: Same as ``"asc"``
+    ``"asc"`` | ``"reverse"``
+        Ascending order (oldest first)
+    ``"desc"``
+        Descending order (newest first)
+
+
+extractor.kemono.discord.order-posts
+------------------------------------
+Type
+    ``string``
+Default
+    ``"asc"``
+Description
+    Controls the order in which
+    ``discord`` posts
+    are returned.
+
+    ``"asc"``
+        Ascending order (oldest first)
+    ``"desc"`` | ``"reverse"``
+        Descending order (newest first)
 
 
 extractor.khinsider.covers
@@ -3584,47 +3694,6 @@ Description
 
     If the selected format is not available,
     the first in the list gets chosen (usually `mp3`).
-
-
-extractor.schalenetwork.cbz
----------------------------
-Type
-    ``bool``
-Default
-    ``true``
-Description
-    Download each gallery as a single ``.cbz`` file.
-
-    Disabling this option causes a gallery
-    to be downloaded as individual image files.
-
-
-extractor.schalenetwork.format
-------------------------------
-Type
-    * ``string``
-    * ``list`` of ``strings``
-Default
-    ``["0", "1600", "1280", "980", "780"]``
-Description
-    Name(s) of the image format to download.
-
-    When more than one format is given, the first available one is selected.
-
-    | Possible formats are
-    | ``"780"``, ``"980"``, ``"1280"``, ``"1600"``, ``"0"`` (original)
-
-
-extractor.schalenetwork.tags
-----------------------------
-Type
-    ``bool``
-Default
-    ``false``
-Description
-    Group ``tags`` by type and
-    provide them as ``tags_<type>`` metadata fields,
-    for example ``tags_artist`` or ``tags_character``.
 
 
 extractor.lolisafe.domain
@@ -4857,6 +4926,70 @@ Description
     Download videos.
 
 
+extractor.schalenetwork.crt
+---------------------------
+Type
+    ``string``
+Example
+    * ``"0542daa9-352c-4fd5-a497-6c6d5cf07423"``
+    * ``"/12345/a1b2c3d4e5f6?crt=0542daa9-352c-4fd5-a497-6c6d5cf07423"``
+Description
+    The ``crt`` query parameter value
+    sent when fetching gallery data.
+
+    To get this value:
+
+    * Open your browser's Developer Tools (F12)
+    * Select `Network` -> `XHR`
+    * Open a gallery page
+    * Select the last `Network` entry and copy its ``crt`` value
+
+    Note: You will also need your browser's
+    `user-agent <extractor.*.user-agent_>`__
+
+
+extractor.schalenetwork.format
+------------------------------
+Type
+    * ``string``
+    * ``list`` of ``strings``
+Default
+    ``["0", "1600", "1280", "980", "780"]``
+Description
+    Name(s) of the image format to download.
+
+    When more than one format is given, the first available one is selected.
+
+    | Possible formats are
+    | ``"780"``, ``"980"``, ``"1280"``, ``"1600"``, ``"0"`` (original)
+
+
+extractor.schalenetwork.tags
+----------------------------
+Type
+    ``bool``
+Default
+    ``false``
+Description
+    Group ``tags`` by type and
+    provide them as ``tags_<type>`` metadata fields,
+    for example ``tags_artist`` or ``tags_character``.
+
+
+extractor.schalenetwork.token
+-----------------------------
+Type
+    ``string``
+Example
+    * ``"3f1a9b72-4e4d-4f4e-9e5d-4a2b99f7c893"``
+    * ``"Bearer 3f1a9b72-4e4d-4f4e-9e5d-4a2b99f7c893"``
+    * ``"Authorization: Bearer 3f1a9b72-4e4d-4f4e-9e5d-4a2b99f7c893"``
+Description
+    ``Authorization`` header value
+    used for requests to ``https://api.schale.network``
+    to access ``favorite`` galleries.
+
+
 extractor.sexcom.gifs
 ---------------------
 Type
@@ -4865,6 +4998,22 @@ Default
     ``true``
 Description
     Download animated images as ``.gif`` instead of ``.webp``
+
+
+extractor.simpcity.order-posts
+------------------------------
+Type
+    ``string``
+Default
+    ``"desc"``
+Description
+    Controls the order in which
+    posts of a ``thread`` are processed.
+
+    ``"asc"``
+        Ascending order (oldest first)
+    ``"desc"`` | ``"reverse"``
+        Descending order (newest first)
 
 
 extractor.sizebooru.metadata
@@ -5918,6 +6067,22 @@ Description
 
     Note: Requires `login <extractor.*.username & .password_>`__
     or `cookies <extractor.*.cookies_>`__
+
+
+extractor.vipergirls.order-posts
+--------------------------------
+Type
+    ``string``
+Default
+    ``"desc"``
+Description
+    Controls the order in which
+    posts of a ``thread`` are processed.
+
+    ``"asc"``
+        Ascending order (oldest first)
+    ``"desc"`` | ``"reverse"``
+        Descending order (newest first)
 
 
 extractor.vk.offset
@@ -7852,6 +8017,23 @@ Description
     See `metadata.event`_ for a list of available events.
 
 
+python.expression
+-----------------
+Type
+    ``string``
+Example
+    * ``"print('Foo Bar')"``
+    * ``"terminate()"``
+Description
+    A
+    `Python expression <https://docs.python.org/3/glossary.html#term-expression>`__
+    to
+    `evaluate <https://docs.python.org/3/library/functions.html#eval>`__.
+
+    Note: Only used with
+    `"mode": "eval" <python.mode_>`__
+
+
 python.function
 ---------------
 Type
@@ -7867,6 +8049,23 @@ Description
       ``<function name>`` is the name of the function in that module.
 
     It gets called with the current metadata dict as argument.
+
+
+python.mode
+-----------
+Type
+    ``string``
+Default
+    ``"function"``
+Description
+    Selects what Python code to run.
+
+    ``"eval"``
+        Evaluate an
+        `expression <python.expression_>`__
+    ``function"``
+        Call a
+        `function <python.function_>`__
 
 
 rename.from

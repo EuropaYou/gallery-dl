@@ -56,7 +56,7 @@ __tests__ = (
         "author_url"  : "https://www.bellazon.com/main/profile/72476-shepherd/",
         "date"        : "dt:2015-06-20 21:34:31",
         "date_updated": "dt:2017-06-29 04:32:43",
-        "description" : "Previously featured in the popular TV series, Mr Selfridge, emerging British born actress Millie Brady is set for huge success. \nMillie has just been confirmed as the lead role in ‘The Clan of the Cave Bear’ which will begin filming in May 2015. The drama pilot is from Imagine TV, Allison Shearmur Productions, Fox 21 TV and Lionsgate TV. Millie is also due to appear in the eagerly awaited black comedy, 'Pride and Prejudice and Zombies', staring alongside Matt Smith, Sally Philiips, Douglas Booth, Lily james and Sam Riley. She is currently filming 'Knights of the Roundtable: King Arthur' directed by Guy Ritchie. \n  \n  \nFarfetch, Jun 2015 \nLinda Brownlee photos \n  \n        \n",
+        "description" : "Previously featured in the popular TV series, Mr Selfridge, emerging British born actress Millie Brady is set for huge success. \nMillie has just been confirmed as the lead role in ‘The Clan of the Cave Bear’ which will begin filming in May 2015. The drama pilot is from Imagine TV, Allison Shearmur Productions, Fox 21 TV and Lionsgate TV. Millie is also due to appear in the eagerly awaited black comedy, 'Pride and Prejudice and Zombies', staring alongside Matt Smith, Sally Philiips, Douglas Booth, Lily james and Sam Riley. She is currently filming 'Knights of the Roundtable: King Arthur' directed by Guy Ritchie. \n  \n  \nFarfetch, Jun 2015 \nLinda Brownlee photos",
         "id"          : "57872",
         "posts"       : 1,
         "section"     : "Actresses",
@@ -70,6 +70,11 @@ __tests__ = (
             "Millie Brady",
         ],
     },
+},
+
+{
+    "#url"     : "https://www.bellazon.com/main/topic/57872-millie-brady/#comment-4351049",
+    "#class"   : bellazon.BellazonPostExtractor,
 },
 
 {
@@ -115,6 +120,88 @@ __tests__ = (
             "Bipasha Basu",
         ],
     },
+},
+
+{
+    "#url"     : "https://www.bellazon.com/main/topic/66334-charly-jordan/page/3/#findComment-4576614",
+    "#comment" : "video attachments (#8239)",
+    "#class"   : bellazon.BellazonPostExtractor,
+    "#pattern" : r"https://www\.bellazon\.com/main/applications/core/interface/file/attachment\.php\?id=\d+$",
+    "#range"   : "2-",
+    "#count"   : 10,
+
+    "count"    : 12,
+    "extension": "mp4",
+    "filename" : r"re:^\d+$",
+    "id"       : r"re:6361\d\d\d",
+    "num"      : range(2, 11),
+    "post"     : {
+        "author_id"  : "101807",
+        "author_slug": "rogerdanish",
+        "author_url" : "https://www.bellazon.com/main/profile/101807-rogerdanish/",
+        "count"      : 12,
+        "date"       : "dt:2018-04-06 19:06:06",
+        "id"         : "4576614",
+        "content"    : str
+    },
+    "thread"   : {
+        "author"      : "gtemt",
+        "author_id"   : "29506",
+        "author_slug" : "gtemt",
+        "author_url"  : "https://www.bellazon.com/main/profile/29506-gtemt/",
+        "date"        : "dt:2017-12-19 12:18:46",
+        "date_updated": "type:datetime",
+        "description" : "VID",
+        "id"          : "66334",
+        "posts"       : range(750, 999),
+        "section"     : "Other Females of Interest",
+        "slug"        : "charly-jordan",
+        "title"       : "Charly Jordan",
+        "url"         : "https://www.bellazon.com/main/topic/66334-charly-jordan/",
+        "views"       : int,
+        "path"        : [
+            "Females",
+            "Other Females of Interest",
+            "Charly Jordan",
+        ],
+    },
+},
+
+{
+    "#url"     : "https://www.bellazon.com/main/topic/66334-charly-jordan/page/3/#findComment-4571129",
+    "#comment" : "video attachment with '//www.bellazon.com/main/' as URL (#8239)",
+    "#class"   : bellazon.BellazonPostExtractor,
+    "#results" : (
+        "https://www.bellazon.com/main/uploads/monthly_2018_03/charlyjordan10_Bg6mLKlFBuU.jpg.07b89fe216300157ff5dad0652df11cb.jpg",
+        "https://www.bellazon.com/main/uploads/monthly_2018_03/charlyjordan10_Bg6mLRzlFPz.jpg.3c846bc3d7a2ec4854012ca3bab0af99.jpg",
+        "https://www.bellazon.com/main/uploads/monthly_2018_03/charlyjordan10_Bg6mLVYlQUL.jpg.7e32ef45d5ba5270a330b250f83639dd.jpg",
+        "https://www.bellazon.com/main/applications/core/interface/file/attachment.php?id=6341394",
+    ),
+},
+
+{
+    "#url"     : "https://www.bellazon.com/main/topic/66334-charly-jordan/page/31/#comment-5317926",
+    "#comment" : "video embed (#8239)",
+    "#class"   : bellazon.BellazonPostExtractor,
+    "#results" : "https://www.bellazon.com/main/uploads/monthly_2021_07/215731864_146910617534875_8340126104113274819_n.mp4.2f3cd5cd8cac6bf04c51d511892f187b.mp4",
+
+    "extension": "mp4",
+    "filename" : "215731864_146910617534875_8340126104113274819_n.mp4.2f3cd5cd8cac6bf04c51d511892f187b",
+    "id"       : "10919171",
+},
+
+{
+    "#url"     : "https://www.bellazon.com/main/topic/66334-charly-jordan/page/3/#findComment-4602714",
+    "#comment" : "'/profile/' link",
+    "#class"   : bellazon.BellazonPostExtractor,
+    "#count"   : 0,
+},
+
+{
+    "#url"     : "https://www.bellazon.com/main/topic/66334-charly-jordan/page/3/#findComment-4603172",
+    "#comment" : "'inline' image",
+    "#class"   : bellazon.BellazonPostExtractor,
+    "#results" : "https://www.bellazon.com/main/uploads/monthly_2018_04/30602369_1891291154222843_1650952189830496256_n.jpg.33e6ab78dd0e8723f790ad4f58f3761a.jpg",
 },
 
 {
@@ -171,6 +258,7 @@ __tests__ = (
     "#url"     : "https://www.bellazon.com/main/topic/1774-zhang-ziyi/",
     "#class"   : bellazon.BellazonThreadExtractor,
     "#range"   : "1-5",
+    "#options" : {"order-posts": "asc"},
     "#results" : (
         "http://img292.echo.cx/my.php?image=4moon011rk.jpg",
         "http://img294.echo.cx/my.php?image=heroclip3jb.jpg",
