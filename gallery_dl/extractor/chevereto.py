@@ -40,19 +40,15 @@ class CheveretoExtractor(BaseExtractor):
 BASE_PATTERN = CheveretoExtractor.update({
     "jpgfish": {
         "root": "https://jpg6.su",
-        "pattern": r"jpe?g\d?\.(?:su|pet|fish(?:ing)?|church)",
-    },
-    "imgkiwi": {
-        "root": "https://img.kiwi",
-        "pattern": r"img\.kiwi",
+        "pattern": r"(?:www\.)?jpe?g\d?\.(?:su|pet|fish(?:ing)?|church)",
     },
     "imagepond": {
         "root": "https://imagepond.net",
-        "pattern": r"imagepond\.net",
+        "pattern": r"(?:www\.)?imagepond\.net",
     },
     "imglike": {
         "root": "https://imglike.com",
-        "pattern": r"imglike\.com",
+        "pattern": r"(?:www\.)?imglike\.com",
     },
 })
 
@@ -79,7 +75,7 @@ class CheveretoImageExtractor(CheveretoExtractor):
                     fromhex=True)
 
         file = {
-            "id"   : self.path.rpartition(".")[2],
+            "id"   : self.path.rpartition("/")[2].rpartition(".")[2],
             "url"  : url,
             "album": text.remove_html(extr(
                 "Added to <a", "</a>").rpartition(">")[2]),
@@ -144,7 +140,8 @@ class CheveretoAlbumExtractor(CheveretoExtractor):
 
     def items(self):
         url = self.root + self.path
-        data = {"_extractor": CheveretoImageExtractor}
+        data_image = {"_extractor": CheveretoImageExtractor}
+        data_video = {"_extractor": CheveretoVideoExtractor}
 
         if self.path.endswith("/sub"):
             albums = self._pagination(url)
@@ -152,8 +149,9 @@ class CheveretoAlbumExtractor(CheveretoExtractor):
             albums = (url,)
 
         for album in albums:
-            for image in self._pagination(album):
-                yield Message.Queue, image, data
+            for item_url in self._pagination(album):
+                data = data_video if "/video/" in item_url else data_image
+                yield Message.Queue, item_url, data
 
 
 class CheveretoCategoryExtractor(CheveretoExtractor):

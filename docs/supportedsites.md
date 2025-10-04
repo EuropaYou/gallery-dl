@@ -607,6 +607,12 @@ Consider all listed sites to potentially be NSFW.
     <td>Authors, Chapters, Covers, Updates Feed, Library, MDLists, Manga</td>
     <td>Supported</td>
 </tr>
+<tr id="mangafire" title="mangafire">
+    <td>MangaFire</td>
+    <td>https://mangafire.to/</td>
+    <td>Chapters, Manga</td>
+    <td></td>
+</tr>
 <tr id="mangapark" title="mangapark">
     <td>MangaPark</td>
     <td>https://mangapark.net/</td>
@@ -616,6 +622,12 @@ Consider all listed sites to potentially be NSFW.
 <tr id="mangaread" title="mangaread">
     <td>MangaRead</td>
     <td>https://mangaread.org/</td>
+    <td>Chapters, Manga</td>
+    <td></td>
+</tr>
+<tr id="mangareader" title="mangareader">
+    <td>MangaReader</td>
+    <td>https://mangareader.to/</td>
     <td>Chapters, Manga</td>
     <td></td>
 </tr>
@@ -700,7 +712,7 @@ Consider all listed sites to potentially be NSFW.
 <tr id="patreon" title="patreon">
     <td>Patreon</td>
     <td>https://www.patreon.com/</td>
-    <td>Creators, Posts, User Profiles</td>
+    <td>Collections, Creators, Posts, User Profiles</td>
     <td><a href="https://github.com/mikf/gallery-dl#cookies">Cookies</a></td>
 </tr>
 <tr id="pexels" title="pexels">
@@ -864,6 +876,12 @@ Consider all listed sites to potentially be NSFW.
     <td>https://rule34.xyz/</td>
     <td>Playlists, Posts, Tag Searches</td>
     <td>Supported</td>
+</tr>
+<tr id="s3ndpics" title="s3ndpics">
+    <td>S3ND</td>
+    <td>https://s3nd.pics/</td>
+    <td>Posts, Search Results, User Profiles</td>
+    <td></td>
 </tr>
 <tr id="saint" title="saint">
     <td>Saint</td>
@@ -1224,12 +1242,6 @@ Consider all listed sites to potentially be NSFW.
 <tr id="jpgfish" title="jpgfish">
     <td>JPG Fish</td>
     <td>https://jpg6.su/</td>
-    <td>Albums, Categories, individual Images, User Profiles, Videos</td>
-    <td></td>
-</tr>
-<tr id="imgkiwi" title="imgkiwi">
-    <td>IMG.Kiwi</td>
-    <td>https://img.kiwi/</td>
     <td>Albums, Categories, individual Images, User Profiles, Videos</td>
     <td></td>
 </tr>
