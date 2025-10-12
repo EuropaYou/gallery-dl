@@ -101,7 +101,7 @@ class InstagramExtractor(Extractor):
                     if videos:
                         file["_http_headers"] = videos_headers
                         text.nameext_from_url(url, file)
-                        if videos_dash and "_ytdl_manifest_data" in post:
+                        if videos_dash and "_ytdl_manifest_data" in file:
                             file["_fallback"] = (url,)
                             file["_ytdl_manifest"] = "dash"
                             url = f"ytdl:{post['post_url']}{file['num']}.mp4"
@@ -304,6 +304,8 @@ class InstagramExtractor(Extractor):
             self._extract_tagged_users(item, media)
             files.append(media)
 
+        if "subscription_media_visibility" in post:
+            data["subscription"] = post["subscription_media_visibility"]
         if "type" not in data:
             if len(files) == 1 and files[0]["video_url"]:
                 data["type"] = "reel"
@@ -447,7 +449,8 @@ class InstagramExtractor(Extractor):
         return cursor
 
     def _update_cursor(self, cursor):
-        self.log.debug("Cursor: %s", cursor)
+        if cursor:
+            self.log.debug("Cursor: %s", cursor)
         self._cursor = cursor
         return cursor
 
@@ -472,16 +475,18 @@ class InstagramPostExtractor(InstagramExtractor):
     """Extractor for an Instagram post"""
     subcategory = "post"
     pattern = (r"(?:https?://)?(?:www\.)?instagram\.com"
-               r"/(?:share/()|[^/?#]+/)?(?:p|tv|reels?())/([^/?#]+)")
+               r"/(?:share()(?:/(?:p|tv|reels?()))?"
+               r"|(?:[^/?#]+/)?(?:p|tv|reels?()))"
+               r"/([^/?#]+)")
     example = "https://www.instagram.com/p/abcdefg/"
 
     def __init__(self, match):
-        if match[2] is not None:
+        if match[2] is not None or match[3] is not None:
             self.subcategory = "reel"
         InstagramExtractor.__init__(self, match)
 
     def posts(self):
-        share, reel, shortcode = self.groups
+        share, _, _, shortcode = self.groups
         if share is not None:
             url = text.ensure_http_scheme(self.url)
             headers = {

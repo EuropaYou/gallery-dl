@@ -228,7 +228,8 @@ class Extractor():
                     break
 
             finally:
-                Extractor.request_timestamp = time.time()
+                if interval:
+                    Extractor.request_timestamp = time.time()
 
             self.log.debug("%s (%s/%s)", msg, tries, retries+1)
             if tries > retries:
@@ -262,6 +263,7 @@ class Extractor():
     def request_location(self, url, **kwargs):
         kwargs.setdefault("method", "HEAD")
         kwargs.setdefault("allow_redirects", False)
+        kwargs.setdefault("interval", False)
         return self.request(url, **kwargs).headers.get("location", "")
 
     def request_json(self, url, **kwargs):
@@ -539,7 +541,7 @@ class Extractor():
         elif isinstance(cookies_source, str):
             path = util.expand_path(cookies_source)
             try:
-                with open(path) as fp:
+                with open(path, encoding="utf-8") as fp:
                     cookies = util.cookiestxt_load(fp)
             except ValueError as exc:
                 self.log.warning("cookies: Invalid Netscape cookies.txt file "
@@ -597,7 +599,7 @@ class Extractor():
 
         path_tmp = path + ".tmp"
         try:
-            with open(path_tmp, "w") as fp:
+            with open(path_tmp, "w", encoding="utf-8") as fp:
                 util.cookiestxt_store(fp, self.cookies)
             os.replace(path_tmp, path)
         except OSError as exc:

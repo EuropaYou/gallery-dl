@@ -148,7 +148,7 @@ Consider all listed sites to potentially be NSFW.
 <tr id="bluesky" title="bluesky">
     <td>Bluesky</td>
     <td>https://bsky.app/</td>
-    <td>Avatars, Backgrounds, Feeds, Followed Users, Hashtags, User Profile Information, Likes, Lists, Media Files, Posts, Replies, Search Results, User Profiles, Videos</td>
+    <td>Avatars, Backgrounds, Bookmarks, Feeds, Followed Users, Hashtags, User Profile Information, Likes, Lists, Media Files, Posts, Replies, Search Results, User Profiles, Videos</td>
     <td>Supported</td>
 </tr>
 <tr id="boosty" title="boosty">
@@ -221,6 +221,12 @@ Consider all listed sites to potentially be NSFW.
     <td>CyberFile</td>
     <td>https://cyberfile.me/</td>
     <td>Files, Folders</td>
+    <td></td>
+</tr>
+<tr id="dandadan" title="dandadan">
+    <td>Dandadan</td>
+    <td>https://dandadan.net/</td>
+    <td>Chapters, Manga</td>
     <td></td>
 </tr>
 <tr id="dankefuerslesen" title="dankefuerslesen">
@@ -797,7 +803,7 @@ Consider all listed sites to potentially be NSFW.
     <td>Poipiku</td>
     <td>https://poipiku.com/</td>
     <td>Posts, User Profiles</td>
-    <td></td>
+    <td><a href="https://github.com/mikf/gallery-dl#cookies">Cookies</a></td>
 </tr>
 <tr id="poringa" title="poringa">
     <td>Poringa</td>
@@ -1073,7 +1079,7 @@ Consider all listed sites to potentially be NSFW.
     <td>Twitter</td>
     <td>https://x.com/</td>
     <td>Avatars, Backgrounds, Bookmarks, Communities, Events, Followers, Followed Users, Hashtags, Highlights, Home Feed, individual Images, User Profile Information, Likes, Lists, List Members, Media Timelines, Quotes, Search Results, Timelines, Tweets, User Profiles</td>
-    <td>Supported</td>
+    <td><a href="https://github.com/mikf/gallery-dl#cookies">Cookies</a></td>
 </tr>
 <tr id="unsplash" title="unsplash">
     <td>Unsplash</td>

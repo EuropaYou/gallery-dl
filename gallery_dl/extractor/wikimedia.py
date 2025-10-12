@@ -74,9 +74,7 @@ class WikimediaExtractor(BaseExtractor):
             m["name"]: m["value"]
             for m in image["commonmetadata"] or ()}
 
-        filename = image["canonicaltitle"]
-        image["filename"], _, image["extension"] = \
-            filename.partition(":")[2].rpartition(".")
+        text.nameext_from_url(image["canonicaltitle"].partition(":")[2], image)
         image["date"] = text.parse_datetime(
             image["timestamp"], "%Y-%m-%dT%H:%M:%SZ")
 
@@ -92,7 +90,16 @@ class WikimediaExtractor(BaseExtractor):
             self.prepare_info(info)
             yield Message.Directory, info
 
-            for info["num"], image in enumerate(images, 1):
+            num = 0
+            for image in images:
+                # https://www.mediawiki.org/wiki/Release_notes/1.34
+                if "filemissing" in image:
+                    self.log.warning(
+                        "File %s (or its revision) is missing",
+                        image["canonicaltitle"].partition(":")[2])
+                    continue
+                num += 1
+                image["num"] = num
                 self.prepare_image(image)
                 image.update(info)
                 yield Message.Url, image["url"], image

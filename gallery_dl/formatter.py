@@ -40,7 +40,15 @@ def parse(format_string, default=NONE, fmt=format):
     else:
         cls = StringFormatter
 
-    formatter = _CACHE[key] = cls(format_string, default, fmt)
+    try:
+        formatter = _CACHE[key] = cls(format_string, default, fmt)
+    except Exception as exc:
+        import logging
+        logging.getLogger("formatter").error(
+            "Invalid format string '%s' (%s: %s)",
+            format_string, exc.__class__.__name__, exc)
+        raise
+
     return formatter
 
 
@@ -259,7 +267,7 @@ class TemplateFormatter(StringFormatter):
     """Read format_string from file"""
 
     def __init__(self, path, default=NONE, fmt=format):
-        with open(util.expand_path(path)) as fp:
+        with open(util.expand_path(path), encoding="utf-8") as fp:
             format_string = fp.read()
         StringFormatter.__init__(self, format_string, default, fmt)
 
@@ -268,7 +276,7 @@ class TemplateFStringFormatter(FStringFormatter):
     """Read f-string from file"""
 
     def __init__(self, path, default=NONE, fmt=None):
-        with open(util.expand_path(path)) as fp:
+        with open(util.expand_path(path), encoding="utf-8") as fp:
             fstring = fp.read()
         FStringFormatter.__init__(self, fstring, default, fmt)
 
@@ -277,7 +285,7 @@ class TemplateJinjaFormatter(JinjaFormatter):
     """Generate text by evaluating a Jinja template"""
 
     def __init__(self, path, default=NONE, fmt=None):
-        with open(util.expand_path(path)) as fp:
+        with open(util.expand_path(path), encoding="utf-8") as fp:
             source = fp.read()
         JinjaFormatter.__init__(self, source, default, fmt)
 
