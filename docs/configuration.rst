@@ -587,6 +587,7 @@ Description
     * ``sankaku``
     * ``scrolller``
     * ``seiga``
+    * ``simpcity``
     * ``subscribestar``
     * ``tapas``
     * ``tsumino``
@@ -957,6 +958,17 @@ Description
     Additional name-value pairs to be added to each metadata dictionary.
 
 
+extractor.*.keywords-default
+----------------------------
+Type
+    any
+Default
+    ``"None"``
+Description
+    Default value used for missing or undefined keyword names in a
+    `Format String`_.
+
+
 extractor.*.keywords-eval
 -------------------------
 Type
@@ -968,15 +980,18 @@ Description
     as a `Format String`_.
 
 
-extractor.*.keywords-default
-----------------------------
+extractor.*.keywords-global
+---------------------------
 Type
-    any
-Default
-    ``"None"``
+    ``object`` (`name` → `value`)
+Example
+    ``{"type": "Original", "type_id": 1, "type_category": "meta"}``
 Description
-    Default value used for missing or undefined keyword names in a
-    `Format String`_.
+    Global name-value pairs to be added to each metadata dictionary.
+Note
+    Keywords defined here will be overwritten by keywords from
+    `extractor.keywords <extractor.*.keywords_>`__
+    with the same name.
 
 
 extractor.*.metadata-url
@@ -1134,15 +1149,16 @@ Type
 Default
     ``"file"``
 Example
-    * ``"file,skip"``
-    * ``["file", "skip"]``
+    * ``"after,skip"``
+    * ``["after", "skip"]``
 Description
     `Event(s) <metadata.event_>`__
     for which IDs get written to an
     `archive <extractor.*.archive_>`__.
-
-    Available events are:
-    ``file``, ``skip``
+Available Events
+    * ``file``
+    * ``after``
+    * ``skip``
 
 
 extractor.*.archive-format
@@ -1501,12 +1517,19 @@ extractor.*.date-format
 Type
     ``string``
 Default
-    ``"%Y-%m-%dT%H:%M:%S"``
+    ``null``
 Description
     Format string used to parse ``string`` values of
     `date-min` and `date-max`.
 
     See |strptime|_ for a list of formatting directives.
+Special Values
+    ``null``
+        | Parse `date-min` and `date-max` according to
+          `ISO 8601 <https://en.wikipedia.org/wiki/ISO_8601>`__
+        | See
+          `datetime.fromisoformat() <https://docs.python.org/3/library/datetime.html#datetime.datetime.fromisoformat>`__
+          for details and examples.
 Note
     Despite its name, this option does **not** control how
     ``{date}`` metadata fields are formatted.
@@ -2096,6 +2119,45 @@ Description
       ``None`` and ``Soft`` rated images,
 
 
+extractor.civitai.period
+------------------------
+Type
+    ``string``
+Default
+    ``"AllTime"``
+Description
+    Sets the ``period`` parameter
+    when paginating over results.
+Supported Values
+    * ``"AllTime"``
+    * ``"Year"``
+    * ``"Month"``
+    * ``"Week"``
+    * ``"Day"``
+
+
+extractor.civitai.sort
+----------------------
+Type
+    ``string``
+Default
+    ``"Newest"``
+Description
+    Sets the ``sort`` parameter
+    when paginating over results.
+Supported Values
+    * ``"Newest"``
+    * ``"Oldest"``
+    * ``"Most Reactions"``
+    * ``"Most Comments"``
+    * ``"Most Collected"``
+Special Values
+    ``"asc"``
+        Ascending order (``"Oldest"``)
+    ``"desc"`` | ``"reverse"``
+        Descending order (``"Newest"``)
+
+
 extractor.civitai.quality
 -------------------------
 Type
@@ -2188,6 +2250,16 @@ Description
     Leave this value empty or undefined
     to be interactively prompted for a password when needed
     (see `getpass() <https://docs.python.org/3/library/getpass.html#getpass.getpass>`__).
+
+
+extractor.cyberfile.recursive
+-----------------------------
+Type
+    ``bool``
+Default
+    ``true``
+Description
+    Recursively download files from subfolders.
 
 
 extractor.[Danbooru].external
@@ -2970,6 +3042,16 @@ Note
     `fanbox.comments <extractor.fanbox.comments_>`__
 
 
+extractor.fanbox.creator.offset
+-------------------------------
+Type
+    ``integer``
+Default
+    ``0``
+Description
+    Custom ``offset`` starting value when paginating over posts.
+
+
 extractor.fansly.formats
 ------------------------
 Type
@@ -3243,6 +3325,19 @@ Description
     Recursively download files from subfolders.
 
 
+extractor.hdoujin.cbz
+---------------------
+Type
+    ``bool``
+Default
+    ``false``
+Description
+    Download each gallery as a single ``.cbz`` file.
+Note
+    Requires a
+    `token <extractor.hdoujin.token_>`__
+
+
 extractor.hdoujin.crt
 ---------------------
 Type
@@ -3304,7 +3399,10 @@ Example
 Description
     ``Authorization`` header value
     used for requests to ``https://api.hdoujin.org``
-    to access ``favorite`` galleries.
+    to access ``favorite`` galleries
+    or download
+    `.cbz <extractor.hdoujin.cbz_>`__
+    archives.
 
 
 extractor.hentaifoundry.descriptions
@@ -3628,6 +3726,24 @@ Supported Values
     * ``stars``
 Note
     It is possible to use ``"all"`` instead of listing all values separately.
+
+
+extractor.itaku.order
+---------------------
+Type
+    ``string``
+Default
+    ``"desc"``
+Description
+    Controls the order in which
+    images/posts/users are returned.
+
+    ``"asc"`` | ``"reverse"``
+        Ascending order (oldest first)
+    ``"desc"``
+        Descending order (newest first)
+    any other ``string``
+        Custom result order
 
 
 extractor.itaku.videos
@@ -4043,6 +4159,16 @@ Description
     Your access token, necessary to fetch favorited notes.
 
 
+extractor.[misskey].date-min & .date-max
+----------------------------------------
+Type
+    |Date|_
+Default
+    ``null``
+Description
+    Retrieve only notes posted after/before this |Date|_
+
+
 extractor.[misskey].include
 ---------------------------
 Type
@@ -4083,6 +4209,16 @@ Default
     ``true``
 Description
     Fetch media from replies to other notes.
+
+
+extractor.[misskey].text-posts
+------------------------------
+Type
+    ``bool``
+Default
+    ``false``
+Description
+    Also retrieve text-only notes without media content.
 
 
 extractor.[moebooru].pool.metadata
@@ -4347,6 +4483,32 @@ Available Formats
     * ``thumbnail`` (``"h":360,"w":360``)
     * ``thumbnail_large`` (``"h":1080,"w":1080``)
     * ``thumbnail_small`` (``"h":100,"w":100``)
+
+
+extractor.patreon.order-posts
+-----------------------------
+Type
+    ``string``
+Default
+    ``collection``
+        ``"asc"``
+    otherwise
+        ``"desc"``
+Example
+    * ``"-published_at"``
+    * ``"collection_order"``
+Description
+    Controls the order in which
+    posts are returned and processed.
+
+    ``"asc"``
+        Ascending order (oldest first)
+    ``"desc"``
+        Descending order (newest first)
+    ``"reverse"``
+        Reverse order
+    any other ``string``
+        Custom ``sort`` order
 
 
 extractor.patreon.user.date-max
@@ -5122,6 +5284,19 @@ Description
     Download videos.
 
 
+extractor.schalenetwork.cbz
+---------------------------
+Type
+    ``bool``
+Default
+    ``false``
+Description
+    Download each gallery as a single ``.cbz`` file.
+Note
+    Requires a
+    `token <extractor.schalenetwork.token_>`__
+
+
 extractor.schalenetwork.crt
 ---------------------------
 Type
@@ -5186,7 +5361,10 @@ Example
 Description
     ``Authorization`` header value
     used for requests to ``https://api.schale.network``
-    to access ``favorite`` galleries.
+    to access ``favorite`` galleries
+    or download
+    `.cbz <extractor.schalenetwork.cbz_>`__
+    archives.
 
 
 extractor.sexcom.gifs
@@ -6553,6 +6731,17 @@ Description
     will be taken from the original posts, not the retweeted posts.
 
 
+extractor.weibo.text
+--------------------
+Type
+    ``bool``
+Default
+    ``false``
+Description
+    Extract full ``text`` & ``text_raw`` metadata
+    for statuses with truncated ``text``.
+
+
 extractor.weibo.videos
 ----------------------
 Type
@@ -6561,6 +6750,20 @@ Default
     ``true``
 Description
     Download video files.
+
+
+extractor.wikimedia.format
+--------------------------
+Type
+    ``string``
+Default
+    ``fandom`` | ``wikigg``
+        ``"original"``
+    otherwise
+        ``""``
+Description
+    Sets the `format` query parameter value
+    added to all download URLs.
 
 
 extractor.wikimedia.image-revisions
@@ -7870,9 +8073,14 @@ Description
         Write metadata in `JSON Lines <https://jsonlines.org/>`__ format
     ``"tags"``
         Write ``tags`` separated by newlines
+    ``"print"``
+        Write the result of applying
+        `content-format <metadata.content-format_>`__
+        to ``stdout``
     ``"custom"``
-        Write the result of applying `metadata.content-format`_
-        to a file's metadata dictionary
+        Write the result of applying
+        `content-format <metadata.content-format_>`__
+        to `a file <metadata.filename_>`__
     ``"modify"``
         Add or modify metadata entries
     ``"delete"``
@@ -8141,7 +8349,7 @@ metadata.open
 -------------
 Type
     ``string``
-Defsult
+Default
     ``"w"``
 Description
     The ``mode`` in which metadata files get opened.
@@ -8157,12 +8365,35 @@ metadata.encoding
 -----------------
 Type
     ``string``
-Defsult
+Default
     ``"utf-8"``
 Description
     Name of the encoding used to encode a file's content.
 
     See the ``encoding`` argument of |open()|_ for further details.
+
+
+metadata.newline
+-----------------
+Type
+    ``string``
+Default
+    ``null``
+Description
+    The newline sequence used in metadata files.
+
+    If ``null``, any ``\n`` characters
+    written are translated to the system default line separator.
+
+    See the ``newline`` argument of |open()|_ for further details.
+Supported Values
+    ``null``
+        Any ``\n`` characters
+        written are translated to the system default line separator.
+    ``""`` | ``"\n"``
+        Don't replace newline characters.
+    ``"\r"`` | ``"\r\n"``
+        Replace newline characters with the given sequence.
 
 
 metadata.private

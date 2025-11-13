@@ -8,10 +8,7 @@
 
 """Collection of functions that work on strings/text"""
 
-import sys
 import html
-import time
-import datetime
 import urllib.parse
 import re as re_module
 
@@ -113,9 +110,27 @@ def nameext_from_url(url, data=None):
     filename = unquote(filename_from_url(url))
     name, _, ext = filename.rpartition(".")
     if name and len(ext) <= 16:
-        data["filename"], data["extension"] = name, ext.lower()
+        data["filename"] = name
+        data["extension"] = ext.lower()
     else:
-        data["filename"], data["extension"] = filename, ""
+        data["filename"] = filename
+        data["extension"] = ""
+
+    return data
+
+
+def nameext_from_name(filename, data=None):
+    """Extract the last part of an URL and fill 'data' accordingly"""
+    if data is None:
+        data = {}
+
+    name, _, ext = filename.rpartition(".")
+    if name and len(ext) <= 16:
+        data["filename"] = name
+        data["extension"] = ext.lower()
+    else:
+        data["filename"] = filename
+        data["extension"] = ""
 
     return data
 
@@ -320,46 +335,6 @@ def build_query(params):
         f"{quote(name)}={quote(value)}"
         for name, value in params.items()
     ])
-
-
-if sys.hexversion < 0x30c0000:
-    # Python <= 3.11
-    def parse_timestamp(ts, default=None):
-        """Create a datetime object from a Unix timestamp"""
-        try:
-            return datetime.datetime.utcfromtimestamp(int(ts))
-        except Exception:
-            return default
-else:
-    # Python >= 3.12
-    def parse_timestamp(ts, default=None):
-        """Create a datetime object from a Unix timestamp"""
-        try:
-            Y, m, d, H, M, S, _, _, _ = time.gmtime(int(ts))
-            return datetime.datetime(Y, m, d, H, M, S)
-        except Exception:
-            return default
-
-
-def parse_datetime(date_string, format="%Y-%m-%dT%H:%M:%S%z", utcoffset=0):
-    """Create a datetime object by parsing 'date_string'"""
-    try:
-        d = datetime.datetime.strptime(date_string, format)
-        o = d.utcoffset()
-        if o is not None:
-            # convert to naive UTC
-            d = d.replace(tzinfo=None, microsecond=0) - o
-        else:
-            if d.microsecond:
-                d = d.replace(microsecond=0)
-            if utcoffset:
-                # apply manual UTC offset
-                d += datetime.timedelta(0, utcoffset * -3600)
-        return d
-    except (TypeError, IndexError, KeyError):
-        return None
-    except (ValueError, OverflowError):
-        return date_string
 
 
 urljoin = urllib.parse.urljoin

@@ -39,8 +39,8 @@ class CheveretoExtractor(BaseExtractor):
 
 BASE_PATTERN = CheveretoExtractor.update({
     "jpgfish": {
-        "root": "https://jpg6.su",
-        "pattern": r"(?:www\.)?jpe?g\d?\.(?:su|pet|fish(?:ing)?|church)",
+        "root": "https://jpg7.cr",
+        "pattern": r"(?:www\.)?jpe?g\d?\.(?:cr|su|pet|fish(?:ing)?|church)",
     },
     "imagepond": {
         "root": "https://imagepond.net",
@@ -56,8 +56,8 @@ BASE_PATTERN = CheveretoExtractor.update({
 class CheveretoImageExtractor(CheveretoExtractor):
     """Extractor for chevereto images"""
     subcategory = "image"
-    pattern = BASE_PATTERN + r"(/im(?:g|age)/[^/?#]+)"
-    example = "https://jpg2.su/img/TITLE.ID"
+    pattern = rf"{BASE_PATTERN}(/im(?:g|age)/[^/?#]+)"
+    example = "https://jpg7.cr/img/TITLE.ID"
 
     def items(self):
         url = self.root + self.path
@@ -79,8 +79,7 @@ class CheveretoImageExtractor(CheveretoExtractor):
             "url"  : url,
             "album": text.remove_html(extr(
                 "Added to <a", "</a>").rpartition(">")[2]),
-            "date" : text.parse_datetime(extr(
-                '<span title="', '"'), "%Y-%m-%d %H:%M:%S"),
+            "date" : self.parse_datetime_iso(extr('<span title="', '"')),
             "user" : extr('username: "', '"'),
         }
 
@@ -92,7 +91,7 @@ class CheveretoImageExtractor(CheveretoExtractor):
 class CheveretoVideoExtractor(CheveretoExtractor):
     """Extractor for chevereto videos"""
     subcategory = "video"
-    pattern = BASE_PATTERN + r"(/video/[^/?#]+)"
+    pattern = rf"{BASE_PATTERN}(/video/[^/?#]+)"
     example = "https://imagepond.net/video/TITLE.ID"
 
     def items(self):
@@ -116,8 +115,7 @@ class CheveretoVideoExtractor(CheveretoExtractor):
                 'class="far fa-clock"></i>', "—"),
             "album": text.remove_html(extr(
                 "Added to <a", "</a>").rpartition(">")[2]),
-            "date"     : text.parse_datetime(extr(
-                '<span title="', '"'), "%Y-%m-%d %H:%M:%S"),
+            "date"     : self.parse_datetime_iso(extr('<span title="', '"')),
             "user"     : extr('username: "', '"'),
         }
 
@@ -135,8 +133,8 @@ class CheveretoVideoExtractor(CheveretoExtractor):
 class CheveretoAlbumExtractor(CheveretoExtractor):
     """Extractor for chevereto albums"""
     subcategory = "album"
-    pattern = BASE_PATTERN + r"(/a(?:lbum)?/[^/?#]+(?:/sub)?)"
-    example = "https://jpg2.su/album/TITLE.ID"
+    pattern = rf"{BASE_PATTERN}(/a(?:lbum)?/[^/?#]+(?:/sub)?)"
+    example = "https://jpg7.cr/album/TITLE.ID"
 
     def items(self):
         url = self.root + self.path
@@ -157,7 +155,7 @@ class CheveretoAlbumExtractor(CheveretoExtractor):
 class CheveretoCategoryExtractor(CheveretoExtractor):
     """Extractor for chevereto galleries"""
     subcategory = "category"
-    pattern = BASE_PATTERN + r"(/category/[^/?#]+)"
+    pattern = rf"{BASE_PATTERN}(/category/[^/?#]+)"
     example = "https://imglike.com/category/TITLE"
 
     def items(self):
@@ -169,8 +167,8 @@ class CheveretoCategoryExtractor(CheveretoExtractor):
 class CheveretoUserExtractor(CheveretoExtractor):
     """Extractor for chevereto users"""
     subcategory = "user"
-    pattern = BASE_PATTERN + r"(/[^/?#]+(?:/albums)?)"
-    example = "https://jpg2.su/USER"
+    pattern = rf"{BASE_PATTERN}(/[^/?#]+(?:/albums)?)"
+    example = "https://jpg7.cr/USER"
 
     def items(self):
         url = self.root + self.path

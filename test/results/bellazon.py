@@ -23,7 +23,9 @@ __tests__ = (
     "filename" : str,
     "extension": "jpg",
     "count"    : 5,
-    "num"      : range(1, 5),
+    "num"         : range(1, 5),
+    "num_internal": range(1, 5),
+    "num_external": 0,
     "post"     : {
         "author_id"  : "72476",
         "author_slug": "shepherd",
@@ -134,7 +136,7 @@ __tests__ = (
     "extension": "mp4",
     "filename" : r"re:^\d+$",
     "id"       : r"re:6361\d\d\d",
-    "num"      : range(2, 11),
+    "num"      : range(2, 12),
     "post"     : {
         "author_id"  : "101807",
         "author_slug": "rogerdanish",
@@ -222,6 +224,31 @@ __tests__ = (
 },
 
 {
+    "#url"     : "https://www.bellazon.com/main/topic/4322-candids/page/1852/#comment-5902385",
+    "#comment" : "attachment 'id' with query parameters (#8544)",
+    "#class"   : bellazon.BellazonPostExtractor,
+    "#range"   : "4",
+    "#results" : "https://www.bellazon.com/main/applications/core/interface/file/attachment.php?id=14418097&key=491d27ee2482b1808483f1d544873b06",
+
+    "count"       : 4,
+    "num"         : 4,
+    "filename"    : "download",
+    "extension"   : "jfif",
+    "id"          : "14418097",
+},
+
+{
+    "#url"     : "https://www.bellazon.com/main/topic/4322-candids/page/1066/#comment-3956772",
+    "#comment" : "weird/wrong 'filename' & 'extension' (#8544)",
+    "#class"   : bellazon.BellazonPostExtractor,
+    "#count"   : 16,
+
+    "extension"   : "jpg",
+    "filename"    : r"re:^[^.]+$",
+    "id"          : r"re:^\d+$",
+},
+
+{
     "#url"     : "https://www.bellazon.com/main/topic/57872-millie-brady/",
     "#class"   : bellazon.BellazonThreadExtractor,
     "#pattern" : r"https://www\.bellazon\.com/main/uploads/monthly_\d+_\d+/.+\.jpg",
@@ -303,6 +330,49 @@ __tests__ = (
             "Females",
             "Actresses",
             "Zhang Ziyi",
+        ],
+    },
+},
+
+{
+    "#url"     : "https://www.bellazon.com/main/topic/56-candids/",
+    "#comment" : "'Guest' author (#8397)",
+    "#class"   : bellazon.BellazonThreadExtractor,
+    "#options" : {"order-posts": "asc"},
+    "#range"   : "1",
+    "#results" : (
+        "https://www.bellazon.com/main/uploads/monthly_11_2004/post-0-0-1593851439-26962.jpg",
+    ),
+
+    "post"     : {
+        "author_id"  : "",
+        "author_slug": "",
+        "author_url" : "",
+        "content"    : """<a href="https://www.bellazon.com/main/uploads/monthly_11_2004/post-0-0-1593851439-26962.jpg" class="ipsAttachLink ipsAttachLink_image"><img data-fileid="292" src="https://www.bellazon.com/main/uploads/monthly_11_2004/post-0-0-1593851439-26962_thumb.jpg" class="ipsImage ipsImage_thumbnailed" alt="sss.jpg" loading="lazy"></a>""",
+        "count"      : 1,
+        "date"       : "dt:2004-11-21 03:09:51",
+        "id"         : "292",
+    },
+    "thread"   : {
+        "author"      : "Guest",
+        "author_id"   : "",
+        "author_slug" : "",
+        "author_url"  : "",
+        "date"        : "dt:2004-11-21 01:44:59",
+        "date_updated": "type:datetime",
+        "description" : "Welcome to the Alessandra Ambrosio Candids gallery.  Please only post candid, unposed, off-guard, or funny images in this thread.",
+        "id"          : "56",
+        "posts"       : range(13_000, 30_000),
+        "section"     : "Alessandra Ambrosio",
+        "slug"        : "candids",
+        "title"       : "Candids",
+        "url"         : "https://www.bellazon.com/main/topic/56-candids/",
+        "views"       : range(8_000_000, 10_000_000),
+        "path"        : [
+            "Females",
+            "Female Fashion Models",
+            "Alessandra Ambrosio",
+            "Candids",
         ],
     },
 },

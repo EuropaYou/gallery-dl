@@ -19,11 +19,10 @@ import getpass
 import logging
 import requests
 import threading
-from datetime import datetime
 from xml.etree import ElementTree
 from requests.adapters import HTTPAdapter
 from .message import Message
-from .. import config, output, text, util, cache, exception
+from .. import config, output, text, util, dt, cache, exception
 urllib3 = requests.packages.urllib3
 
 
@@ -32,6 +31,7 @@ class Extractor():
     category = ""
     subcategory = ""
     basecategory = ""
+    basesubcategory = ""
     categorytransfer = False
     directory_fmt = ("{category}",)
     filename_fmt = "{filename}.{extension}"
@@ -63,6 +63,10 @@ class Extractor():
                 self.category, self.subcategory = CATEGORY_MAP[catsub]
             else:
                 self.category = CATEGORY_MAP[self.category]
+
+        self.parse_datetime = dt.parse
+        self.parse_datetime_iso = dt.parse_iso
+        self.parse_timestamp = dt.parse_ts
 
         self._cfgpath = ("extractor", self.category, self.subcategory)
         self._parentdir = ""
@@ -313,9 +317,9 @@ class Extractor():
             seconds = float(seconds)
             until = now + seconds
         elif until:
-            if isinstance(until, datetime):
+            if isinstance(until, dt.datetime):
                 # convert to UTC timestamp
-                until = util.datetime_to_timestamp(until)
+                until = dt.to_ts(until)
             else:
                 until = float(until)
             seconds = until - now
@@ -327,7 +331,7 @@ class Extractor():
             return
 
         if reason:
-            t = datetime.fromtimestamp(until).time()
+            t = dt.datetime.fromtimestamp(until).time()
             isotime = f"{t.hour:02}:{t.minute:02}:{t.second:02}"
             self.log.info("Waiting until %s (%s)", isotime, reason)
         time.sleep(seconds)
@@ -652,7 +656,7 @@ class Extractor():
                     self.log.warning(
                         "cookies: %s/%s expired at %s",
                         cookie.domain.lstrip("."), cookie.name,
-                        datetime.fromtimestamp(cookie.expires))
+                        dt.datetime.fromtimestamp(cookie.expires))
                     continue
 
                 elif diff <= 86400:
@@ -693,13 +697,16 @@ class Extractor():
         def get(key, default):
             ts = self.config(key, default)
             if isinstance(ts, str):
-                try:
-                    ts = int(datetime.strptime(ts, fmt).timestamp())
-                except ValueError as exc:
-                    self.log.warning("Unable to parse '%s': %s", key, exc)
+                dt_obj = dt.parse_iso(ts) if fmt is None else dt.parse(ts, fmt)
+                if dt_obj is dt.NONE:
+                    self.log.warning(
+                        "Unable to parse '%s': Invalid %s string '%s'",
+                        key, "isoformat" if fmt is None else "date", ts)
                     ts = default
+                else:
+                    ts = int(dt.to_ts(dt_obj))
             return ts
-        fmt = self.config("date-format", "%Y-%m-%dT%H:%M:%S")
+        fmt = self.config("date-format")
         return get("date-min", dmin), get("date-max", dmax)
 
     @classmethod
@@ -962,18 +969,16 @@ class BaseExtractor(Extractor):
 
     def __init__(self, match):
         if not self.category:
-            self.groups = match.groups()
-            self.match = match
-            self._init_category()
+            self._init_category(match)
         Extractor.__init__(self, match)
 
-    def _init_category(self):
-        for index, group in enumerate(self.groups):
+    def _init_category(self, match):
+        for index, group in enumerate(match.groups()):
             if group is not None:
                 if index:
                     self.category, self.root, info = self.instances[index-1]
                     if not self.root:
-                        self.root = text.root_from_url(self.match[0])
+                        self.root = text.root_from_url(match[0])
                     self.config_instance = info.get
                 else:
                     self.root = group

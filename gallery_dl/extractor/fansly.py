@@ -35,7 +35,7 @@ class FanslyExtractor(Extractor):
         for post in self.posts():
             files = self._extract_files(post)
             post["count"] = len(files)
-            post["date"] = text.parse_timestamp(post["createdAt"])
+            post["date"] = self.parse_timestamp(post["createdAt"])
 
             yield Message.Directory, post
             for post["num"], file in enumerate(files, 1):
@@ -79,7 +79,7 @@ class FanslyExtractor(Extractor):
             try:
                 self._extract_attachment(files, post, attachment)
             except Exception as exc:
-                self.log.debug("", exc_info=exc)
+                self.log.traceback(exc)
                 self.log.error(
                     "%s/%s, Failed to extract media (%s: %s)",
                     post["id"], attachment.get("id"),
@@ -117,8 +117,8 @@ class FanslyExtractor(Extractor):
         file = {
             **variant,
             "format": variant["type"],
-            "date": text.parse_timestamp(media["createdAt"]),
-            "date_updated": text.parse_timestamp(media["updatedAt"]),
+            "date": self.parse_timestamp(media["createdAt"]),
+            "date_updated": self.parse_timestamp(media["updatedAt"]),
         }
 
         if "metadata" in location:

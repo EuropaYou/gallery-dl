@@ -27,7 +27,7 @@ class ComickCoversExtractor(ComickBase, GalleryExtractor):
     directory_fmt = ("{category}", "{manga}", "Covers")
     filename_fmt = "{volume:>02}_{lang}.{extension}"
     archive_fmt = "c_{id}"
-    pattern = BASE_PATTERN + r"/comic/([\w-]+)/cover"
+    pattern = rf"{BASE_PATTERN}/comic/([\w-]+)/cover"
     example = "https://comick.io/comic/MANGA/cover"
 
     def metadata(self, page):
@@ -60,7 +60,7 @@ class ComickCoversExtractor(ComickBase, GalleryExtractor):
 class ComickChapterExtractor(ComickBase, ChapterExtractor):
     """Extractor for comick.io manga chapters"""
     archive_fmt = "{chapter_hid}_{page}"
-    pattern = (BASE_PATTERN + r"/comic/([\w-]+)"
+    pattern = (rf"{BASE_PATTERN}/comic/([\w-]+)"
                r"/(\w+(?:-(?:chapter|volume)-[^/?#]+)?)")
     example = "https://comick.io/comic/MANGA/ID-chapter-123-en"
 
@@ -114,10 +114,8 @@ class ComickChapterExtractor(ComickBase, ChapterExtractor):
             "chapter_hid"   : ch["hid"],
             "chapter_string": chstr,
             "group"   : ch["group_name"],
-            "date"    : text.parse_datetime(
-                ch["created_at"][:19], "%Y-%m-%dT%H:%M:%S"),
-            "date_updated"  : text.parse_datetime(
-                ch["updated_at"][:19], "%Y-%m-%dT%H:%M:%S"),
+            "date"    : self.parse_datetime_iso(ch["created_at"][:19]),
+            "date_updated"  : self.parse_datetime_iso(ch["updated_at"][:19]),
             "lang"    : ch["lang"],
         }
 
@@ -142,7 +140,7 @@ class ComickChapterExtractor(ComickBase, ChapterExtractor):
 
 class ComickMangaExtractor(ComickBase, MangaExtractor):
     """Extractor for comick.io manga"""
-    pattern = BASE_PATTERN + r"/comic/([\w-]+)/?(?:\?([^#]+))?"
+    pattern = rf"{BASE_PATTERN}/comic/([\w-]+)/?(?:\?([^#]+))?"
     example = "https://comick.io/comic/MANGA"
 
     def items(self):

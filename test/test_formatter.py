@@ -15,7 +15,7 @@ import datetime
 import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from gallery_dl import formatter, text, util, config  # noqa E402
+from gallery_dl import formatter, text, dt, util, config  # noqa E402
 
 try:
     import jinja2
@@ -154,7 +154,7 @@ class TestFormatter(unittest.TestCase):
         self._run_test("{t}" , self.kwdict["t"] , None, int)
         self._run_test("{t}" , self.kwdict["t"] , None, util.identity)
         self._run_test("{dt}", self.kwdict["dt"], None, util.identity)
-        self._run_test("{ds}", self.kwdict["dt"], None, text.parse_datetime)
+        self._run_test("{ds}", self.kwdict["dt"], None, dt.parse_iso)
         self._run_test("{ds:D%Y-%m-%dT%H:%M:%S%z}", self.kwdict["dt"],
                        None, util.identity)
 
@@ -248,6 +248,19 @@ class TestFormatter(unittest.TestCase):
         self._run_test("{a:L50/foo/>51}", "foo")
         self._run_test("{a:Lab/foo/}", "foo")
 
+    def test_specifier_maxlen_bytes(self):
+        v = self.kwdict["a"]
+        self._run_test("{a:Lb5/foo/}" , "foo")
+        self._run_test("{a:Lb50/foo/}", v)
+        self._run_test("{a:Lb50/foo/>50}", " " * 39 + v)
+        self._run_test("{a:Lb50/foo/>51}", "foo")
+        self._run_test("{a:Lbab/foo/}", "foo")
+
+        v = self.kwdict["j"]
+        self._run_test("{j:Lb5/foo/}" , "foo")
+        self._run_test("{j:Lb50/foo/}", v)
+        self._run_test("{j:Lbab/foo/}", "foo")
+
     def test_specifier_join(self):
         self._run_test("{l:J}"       , "abc")
         self._run_test("{l:J,}"      , "a,b,c")
@@ -271,8 +284,8 @@ class TestFormatter(unittest.TestCase):
 
     def test_specifier_datetime(self):
         self._run_test("{ds:D%Y-%m-%dT%H:%M:%S%z}", "2010-01-01 00:00:00")
-        self._run_test("{ds:D%Y}", "2010-01-01T01:00:00+01:00")
-        self._run_test("{l:D%Y}", "None")
+        self._run_test("{ds:D%Y}", "[Invalid DateTime]")
+        self._run_test("{l2:D%Y}", "[Invalid DateTime]")
 
     def test_specifier_offset(self):
         self._run_test("{dt:O 01:00}", "2010-01-01 01:00:00")
@@ -331,6 +344,17 @@ class TestFormatter(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             self._run_test("{a:Xfoo/ */}", "hello wo *")
+
+    def test_specifier_limit_bytes(self):
+        self._run_test("{a:Xb20/ */}", "hElLo wOrLd")
+        self._run_test("{a:Xb10/ */}", "hElLo wO *")
+
+        self._run_test("{j:Xb50/〜/}", "げんそうきょう")
+        self._run_test("{j:Xb20/〜/}", "げんそうき〜")
+        self._run_test("{j:Xb20/ */}", "げんそうきょ *")
+
+        with self.assertRaises(ValueError):
+            self._run_test("{a:Xbfoo/ */}", "hello wo *")
 
     def test_specifier_map(self):
         self._run_test("{L:Mname/}" ,

@@ -43,7 +43,7 @@ class TiktokExtractor(Extractor):
 
             post = video_detail["itemInfo"]["itemStruct"]
             post["user"] = (a := post.get("author")) and a["uniqueId"] or ""
-            post["date"] = text.parse_timestamp(post["createTime"])
+            post["date"] = self.parse_timestamp(post["createTime"])
             original_title = title = post["desc"]
 
             yield Message.Directory, post
@@ -166,7 +166,7 @@ class TiktokExtractor(Extractor):
 class TiktokPostExtractor(TiktokExtractor):
     """Extract a single video or photo TikTok link"""
     subcategory = "post"
-    pattern = BASE_PATTERN + r"/(?:@([\w_.-]*)|share)/(?:phot|vide)o/(\d+)"
+    pattern = rf"{BASE_PATTERN}/(?:@([\w_.-]*)|share)/(?:phot|vide)o/(\d+)"
     example = "https://www.tiktok.com/@USER/photo/1234567890"
 
     def urls(self):
@@ -199,7 +199,7 @@ class TiktokVmpostExtractor(TiktokExtractor):
 class TiktokUserExtractor(TiktokExtractor):
     """Extract a TikTok user's profile"""
     subcategory = "user"
-    pattern = BASE_PATTERN + r"/@([\w_.-]+)/?(?:$|\?|#)"
+    pattern = rf"{BASE_PATTERN}/@([\w_.-]+)/?(?:$|\?|#)"
     example = "https://www.tiktok.com/@USER"
 
     def _init(self):
@@ -214,7 +214,7 @@ class TiktokUserExtractor(TiktokExtractor):
         except (ImportError, SyntaxError) as exc:
             self.log.error("Cannot import module '%s'",
                            getattr(exc, "name", ""))
-            self.log.debug("", exc_info=exc)
+            self.log.traceback(exc)
             raise exception.ExtractionError("yt-dlp or youtube-dl is required "
                                             "for this feature!")
 

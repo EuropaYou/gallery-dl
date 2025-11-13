@@ -30,6 +30,7 @@ CATEGORY_MAP = {
     "ao3"            : "Archive of Our Own",
     "archivedmoe"    : "Archived.Moe",
     "archiveofsins"  : "Archive of Sins",
+    "arena"          : "Are.na",
     "artstation"     : "ArtStation",
     "aryion"         : "Eka's Portal",
     "atfbooru"       : "ATFBooru",
@@ -265,6 +266,9 @@ SUBCATEGORY_MAP = {
         "discord-server": "",
         "posts"         : "",
     },
+    "cyberfile": {
+        "shared": "Shares",
+    },
     "Danbooru": {
         "favgroup": "Favorite Groups",
         "random"  : "Random Posts",
@@ -384,6 +388,7 @@ SUBCATEGORY_MAP = {
     },
     "sexcom": {
         "pins": "User Pins",
+        "feed": "Feed",
     },
     "sizebooru": {
         "user": "User Uploads",
@@ -526,6 +531,7 @@ AUTH_MAP = {
     "sankaku"        : "Supported",
     "scrolller"      : "Supported",
     "seiga"          : "Supported",
+    "simpcity"       : "Supported",
     "smugmug"        : _OAUTH,
     "subscribestar"  : "Supported",
     "tapas"          : "Supported",
@@ -675,6 +681,7 @@ def build_extractor_list():
     base["imgtaxi"] = base["imgdrive"]
     base["imgwallet"] = base["imgdrive"]
     categories["imagehost"] = {k: base[k] for k in sorted(base)}
+    domains["postimg"] = "https://postimages.org/"
     domains["imgtaxi"] = "https://imgtaxi.com/"
     domains["imgwallet"] = "https://imgwallet.com/"
 

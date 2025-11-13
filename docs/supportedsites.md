@@ -109,6 +109,12 @@ Consider all listed sites to potentially be NSFW.
     <td>Search Results, Series, Subscriptions, Tag Searches, User Profiles, User Bookmarks, User Series, User Works, Works</td>
     <td>Supported</td>
 </tr>
+<tr id="arena" title="arena">
+    <td>Are.na</td>
+    <td>https://are.na/</td>
+    <td>Channels</td>
+    <td></td>
+</tr>
 <tr id="artstation" title="artstation">
     <td>ArtStation</td>
     <td>https://www.artstation.com/</td>
@@ -213,14 +219,14 @@ Consider all listed sites to potentially be NSFW.
 </tr>
 <tr id="cyberdrop" title="cyberdrop">
     <td>Cyberdrop</td>
-    <td>https://cyberdrop.me/</td>
+    <td>https://cyberdrop.cr/</td>
     <td>Albums, Media Files</td>
     <td></td>
 </tr>
 <tr id="cyberfile" title="cyberfile">
     <td>CyberFile</td>
     <td>https://cyberfile.me/</td>
-    <td>Files, Folders</td>
+    <td>Files, Folders, Shares</td>
     <td></td>
 </tr>
 <tr id="dandadan" title="dandadan">
@@ -658,7 +664,7 @@ Consider all listed sites to potentially be NSFW.
 <tr id="myhentaigallery" title="myhentaigallery">
     <td>My Hentai Gallery</td>
     <td>https://myhentaigallery.com/</td>
-    <td>Galleries</td>
+    <td>Galleries, Tag Searches</td>
     <td></td>
 </tr>
 <tr id="naver-blog" title="naver-blog">
@@ -928,14 +934,14 @@ Consider all listed sites to potentially be NSFW.
 <tr id="sexcom" title="sexcom">
     <td>Sex.com</td>
     <td>https://www.sex.com/</td>
-    <td>Boards, Likes, Pins, User Pins, related Pins, Search Results</td>
+    <td>Boards, Feed, Likes, Pins, User Pins, related Pins, Search Results</td>
     <td></td>
 </tr>
 <tr id="simpcity" title="simpcity">
     <td>SimpCity Forums</td>
     <td>https://simpcity.cr/</td>
     <td>Forums, Posts, Threads</td>
-    <td></td>
+    <td>Supported</td>
 </tr>
 <tr id="simplyhentai" title="simplyhentai">
     <td>Simply Hentai</td>
@@ -1247,7 +1253,7 @@ Consider all listed sites to potentially be NSFW.
 </tr>
 <tr id="jpgfish" title="jpgfish">
     <td>JPG Fish</td>
-    <td>https://jpg6.su/</td>
+    <td>https://jpg7.cr/</td>
     <td>Albums, Categories, individual Images, User Profiles, Videos</td>
     <td></td>
 </tr>
@@ -1298,19 +1304,19 @@ Consider all listed sites to potentially be NSFW.
 <tr id="e621" title="e621">
     <td>e621</td>
     <td>https://e621.net/</td>
-    <td>Favorites, Pools, Popular Images, Posts, Tag Searches, Frontends</td>
+    <td>Artists, Artist Searches, Favorites, Pools, Popular Images, Posts, Tag Searches, Frontends</td>
     <td>Supported</td>
 </tr>
 <tr id="e926" title="e926">
     <td>e926</td>
     <td>https://e926.net/</td>
-    <td>Favorites, Pools, Popular Images, Posts, Tag Searches</td>
+    <td>Artists, Artist Searches, Favorites, Pools, Popular Images, Posts, Tag Searches</td>
     <td>Supported</td>
 </tr>
 <tr id="e6ai" title="e6ai">
     <td>e6AI</td>
     <td>https://e6ai.net/</td>
-    <td>Favorites, Pools, Popular Images, Posts, Tag Searches</td>
+    <td>Artists, Artist Searches, Favorites, Pools, Popular Images, Posts, Tag Searches</td>
     <td>Supported</td>
 </tr>
 
@@ -1654,6 +1660,12 @@ Consider all listed sites to potentially be NSFW.
 <tr id="thecollectionS" title="thecollectionS">
     <td>The /co/llection</td>
     <td>https://co.llection.pics/</td>
+    <td>Posts, Tag Searches</td>
+    <td></td>
+</tr>
+<tr id="soybooru" title="soybooru">
+    <td>Soybooru</td>
+    <td>https://soybooru.com/</td>
     <td>Posts, Tag Searches</td>
     <td></td>
 </tr>
@@ -2069,7 +2081,7 @@ Consider all listed sites to potentially be NSFW.
 </tr>
 <tr id="silverpic" title="silverpic">
     <td>SilverPic.com</td>
-    <td>https://silverpic.com/</td>
+    <td>https://silverpic.net/</td>
     <td>individual Images</td>
     <td></td>
 </tr>

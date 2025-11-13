@@ -76,7 +76,7 @@ class ZerochanExtractor(BooruExtractor):
         data = {
             "id"      : text.parse_int(entry_id),
             "file_url": jsonld["contentUrl"],
-            "date"    : text.parse_datetime(jsonld["datePublished"]),
+            "date"    : self.parse_datetime_iso(jsonld["datePublished"]),
             "width"   : text.parse_int(jsonld["width"][:-3]),
             "height"  : text.parse_int(jsonld["height"][:-3]),
             "size"    : text.parse_bytes(jsonld["contentSize"][:-1]),
@@ -128,7 +128,7 @@ class ZerochanExtractor(BooruExtractor):
         return data
 
     def _parse_json(self, txt):
-        txt = util.re(r"[\x00-\x1f\x7f]").sub("", txt)
+        txt = text.re(r"[\x00-\x1f\x7f]").sub("", txt)
         main, _, tags = txt.partition('tags": [')
 
         item = {}
@@ -160,7 +160,7 @@ class ZerochanExtractor(BooruExtractor):
 class ZerochanTagExtractor(ZerochanExtractor):
     subcategory = "tag"
     directory_fmt = ("{category}", "{search_tags}")
-    pattern = BASE_PATTERN + r"/(?!\d+$)([^/?#]+)/?(?:\?([^#]+))?"
+    pattern = rf"{BASE_PATTERN}/(?!\d+$)([^/?#]+)/?(?:\?([^#]+))?"
     example = "https://www.zerochan.net/TAG"
 
     def __init__(self, match):
@@ -286,7 +286,7 @@ class ZerochanTagExtractor(ZerochanExtractor):
 
 class ZerochanImageExtractor(ZerochanExtractor):
     subcategory = "image"
-    pattern = BASE_PATTERN + r"/(\d+)"
+    pattern = rf"{BASE_PATTERN}/(\d+)"
     example = "https://www.zerochan.net/12345"
 
     def posts(self):

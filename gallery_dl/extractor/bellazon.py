@@ -47,7 +47,7 @@ class BellazonExtractor(Extractor):
             post["count"] = data["count"] = len(urls)
 
             yield Message.Directory, data
-            data["num"] = 0
+            data["num"] = data["num_internal"] = data["num_external"] = 0
             for info, url, url_img in urls:
                 url = text.unescape(url or url_img)
 
@@ -59,27 +59,35 @@ class BellazonExtractor(Extractor):
                     ):
                         continue
                     data["num"] += 1
+                    data["num_internal"] += 1
                     if not (alt := text.extr(info, ' alt="', '"')) or (
                             alt.startswith("post-") and "_thumb." in alt):
-                        name = url
+                        dc = text.nameext_from_url(url, data.copy())
                     else:
-                        name = text.unescape(alt)
+                        dc = data.copy()
+                        dc["name"] = name = text.unescape(alt)
+                        dc["filename"] = name.partition(".")[0]
 
-                    dc = text.nameext_from_url(name, data.copy())
                     dc["id"] = text.extr(info, 'data-fileid="', '"')
                     if ext := text.extr(info, 'data-fileext="', '"'):
                         dc["extension"] = ext
                     elif "/core/interface/file/attachment.php" in url:
                         if not dc["id"]:
-                            dc["id"] = url.rpartition("?id=")[2]
+                            dc["id"] = \
+                                url.rpartition("?id=")[2].partition("&")[0]
                         if name := text.extr(info, ">", "<").strip():
-                            text.nameext_from_url(name, dc)
+                            dc["name"] = name = text.unescape(name)
+                            text.nameext_from_name(name, dc)
+                    else:
+                        dc["extension"] = text.ext_from_url(url)
 
                     if url[0] == "/":
                         url = f"https:{url}"
                     yield Message.Url, url, dc
 
                 else:
+                    data["num"] += 1
+                    data["num_external"] += 1
                     yield Message.Queue, url, data
 
     def _pagination(self, base, pnum=None):
@@ -130,7 +138,7 @@ class BellazonExtractor(Extractor):
         author = schema["author"]
         stats = schema["interactionStatistic"]
         url_t = schema["url"]
-        url_a = author["url"]
+        url_a = author.get("url") or ""
 
         path = text.split_html(text.extr(
             page, '<nav class="ipsBreadcrumb', "</nav>"))[2:-1]
@@ -141,8 +149,8 @@ class BellazonExtractor(Extractor):
             "title": schema["headline"],
             "views": stats[0]["userInteractionCount"],
             "posts": stats[1]["userInteractionCount"],
-            "date" : text.parse_datetime(schema["datePublished"]),
-            "date_updated": text.parse_datetime(schema["dateModified"]),
+            "date" : self.parse_datetime_iso(schema["datePublished"]),
+            "date_updated": self.parse_datetime_iso(schema["dateModified"]),
             "description" : text.unescape(schema["text"]).strip(),
             "section"     : path[-2],
             "author"      : author["name"],
@@ -151,8 +159,12 @@ class BellazonExtractor(Extractor):
 
         thread["id"], _, thread["slug"] = \
             url_t.rsplit("/", 2)[1].partition("-")
-        thread["author_id"], _, thread["author_slug"] = \
-            url_a.rsplit("/", 2)[1].partition("-")
+
+        if url_a:
+            thread["author_id"], _, thread["author_slug"] = \
+                url_a.rsplit("/", 2)[1].partition("-")
+        else:
+            thread["author_id"] = thread["author_slug"] = ""
 
         return thread
 
@@ -162,15 +174,18 @@ class BellazonExtractor(Extractor):
         post = {
             "id": extr('id="elComment_', '"'),
             "author_url": extr(" href='", "'"),
-            "date": text.parse_datetime(extr("datetime='", "'")),
+            "date": self.parse_datetime_iso(extr("datetime='", "'")),
             "content": extr("<!-- Post content -->", "\n\t\t</div>"),
         }
 
         if (pos := post["content"].find(">")) >= 0:
             post["content"] = post["content"][pos+1:].strip()
 
-        post["author_id"], _, post["author_slug"] = \
-            post["author_url"].rsplit("/", 2)[1].partition("-")
+        if url_a := post["author_url"]:
+            post["author_id"], _, post["author_slug"] = \
+                url_a.rsplit("/", 2)[1].partition("-")
+        else:
+            post["author_id"] = post["author_slug"] = ""
 
         return post
 
