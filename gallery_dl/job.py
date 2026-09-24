@@ -18,6 +18,7 @@ from . import (
     postprocessor,
     archive,
     config,
+    watch,
     exception,
     formatter,
     output,
@@ -408,7 +409,7 @@ class DownloadJob(Job):
         self.fallback = None
         self.archive = None
         self.sleep = None
-        self.hooks = ()
+        self.hooks = collections.defaultdict(list)
         self.downloaders = {}
         self.out = output.select()
         self.visited = set() if parent is None else parent.visited
@@ -772,80 +773,63 @@ class DownloadJob(Job):
             if self.archive is not None:
                 self.archive.check = pathfmt.exists
 
-        if not cfg("postprocess", True):
-            return
+        if cfg("postprocess", True):
+            if postprocessors := extr.config_accumulate("postprocessors"):
+                pp_log = self.get_logger("postprocessor")
+                pp_conf = config.get((), "postprocessor") or {}
+                pp_opts = cfg("postprocessor-options")
+                pp_list = []
 
-        if postprocessors := extr.config_accumulate("postprocessors"):
-            self.hooks = collections.defaultdict(list)
+                for pp_dict in postprocessors:
+                    if isinstance(pp_dict, str):
+                        pp_dict = pp_conf.get(pp_dict) or {"name": pp_dict}
+                    elif "type" in pp_dict:
+                        pp_type = pp_dict["type"]
+                        if pp_type in pp_conf:
+                            pp_dict = {**pp_conf[pp_type], **pp_dict}
+                        if "name" not in pp_dict:
+                            pp_dict["name"] = pp_type
+                    if pp_opts:
+                        pp_dict = {**pp_dict, **pp_opts}
 
-            pp_log = self.get_logger("postprocessor")
-            pp_conf = config.get((), "postprocessor") or {}
-            pp_opts = cfg("postprocessor-options")
-            pp_list = []
-
-            for pp_dict in postprocessors:
-                if isinstance(pp_dict, str):
-                    pp_dict = pp_conf.get(pp_dict) or {"name": pp_dict}
-                elif "type" in pp_dict:
-                    pp_type = pp_dict["type"]
-                    if pp_type in pp_conf:
-                        pp = pp_conf[pp_type].copy()
-                        pp.update(pp_dict)
-                        pp_dict = pp
-                    if "name" not in pp_dict:
-                        pp_dict["name"] = pp_type
-                if pp_opts:
-                    pp_dict = pp_dict.copy()
-                    pp_dict.update(pp_opts)
-
-                clist = pp_dict.get("whitelist")
-                if clist is not None:
-                    negate = False
-                else:
-                    clist = pp_dict.get("blacklist")
-                    negate = True
-                if clist and not util.build_extractor_filter(
-                        clist, negate)(extr):
-                    continue
-
-                name = pp_dict.get("name", "")
-                if "__init__" not in pp_dict:
-                    name, sep, event = name.rpartition("@")
-                    if sep:
-                        pp_dict["name"] = name
-                        if "event" not in pp_dict:
-                            pp_dict["event"] = event
+                    clist = pp_dict.get("whitelist")
+                    if clist is not None:
+                        negate = False
                     else:
-                        name = event
+                        clist = pp_dict.get("blacklist")
+                        negate = True
+                    if clist and not util.build_extractor_filter(
+                            clist, negate)(extr):
+                        continue
 
-                    name, sep, mode = name.rpartition("/")
-                    if sep:
-                        pp_dict["name"] = name
-                        if "mode" not in pp_dict:
-                            pp_dict["mode"] = mode
-                    else:
-                        name = mode
 
-                    pp_dict["__init__"] = None
+                    name = pp_dict.get("name", "")
+                    if "__init__" not in pp_dict:
+                        name, sep, event = name.rpartition("@")
+                        if sep:
+                            pp_dict["name"] = name
+                            if "event" not in pp_dict:
+                                pp_dict["event"] = event
+                        else:
+                            name = event
 
-                pp_cls = postprocessor.find(name)
-                if pp_cls is None:
-                    pp_log.warning("module '%s' not found", name)
-                    continue
-                try:
-                    pp_obj = pp_cls(self, pp_dict)
-                except Exception as exc:
-                    pp_log.traceback(exc)
-                    pp_log.error("'%s' initialization failed:  %s: %s",
-                                 name, exc.__class__.__name__, exc)
-                else:
-                    pp_list.append(pp_obj)
+                        name, sep, mode = name.rpartition("/")
+                        if sep:
+                            pp_dict["name"] = name
+                            if "mode" not in pp_dict:
+                                pp_dict["mode"] = mode
+                        else:
+                            name = mode
 
-            if pp_list:
-                extr.log.debug("Active postprocessor modules: %s", pp_list)
-                if "init" in self.hooks:
-                    for callback in self.hooks["init"]:
-                        callback(pathfmt)
+                if pp_list:
+                    extr.log.debug(
+                        "Active postprocessor modules: %s", pp_list)
+                    if "init" in self.hooks:
+                        for callback in self.hooks["init"]:
+                            callback(pathfmt)
+
+        watch.activate(self)
+
 
     def register_hooks(self, hooks, options=None):
         expr = options.get("filter") if options else None
